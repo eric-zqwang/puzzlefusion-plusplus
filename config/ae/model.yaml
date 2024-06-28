@@ -1,0 +1,8 @@
+model:
+  model_name: 
+    _target_: puzzlefusion_plusplus.vqvae.model.fracture_ae.FractureAE
+
+  lr_scheduler:
+    _target_: torch.optim.lr_scheduler.MultiStepLR
+    milestones: [800, 1400]
+    gamma: 0.5

@@ -1,0 +1,7 @@
+model:
+  model_name: 
+    _target_: puzzlefusion_plusplus.verifier.model.verifier.Verifier
+  num_bins: 6
+  embed_dim: 256
+  num_layers: 6
+  num_heads: 8

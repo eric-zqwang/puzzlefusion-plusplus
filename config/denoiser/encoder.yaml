@@ -1,0 +1,10 @@
+ae:
+  ae_name:
+    _target_: puzzlefusion_plusplus.denoiser.model.modules.encoder.VQVAE
+    
+  n_embeddings: 1024
+  embedding_dim: 16
+  num_point: 25
+  num_dim: 64
+  local_decode_pts: 40
+  beta: 0.25

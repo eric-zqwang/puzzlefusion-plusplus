@@ -1,0 +1,30 @@
+model:
+  model_name: 
+    _target_: puzzlefusion_plusplus.denoiser.model.denoiser.Denoiser
+
+  encoder_weights_path: null
+  multiple_ref_parts: True
+
+  num_dim: 64
+  num_point: 25
+
+  out_channels: 7
+  std: 1
+  multires: 10
+  embed_dim: 512
+  num_layers: 6
+  num_heads: 8
+  dropout_rate: 0.1
+  DDPM_TRAIN_STEPS: 1000
+  DDPM_BETA_SCHEDULE: "linear"
+  timestep_spacing: "leading"
+
+  PREDICT_TYPE: 'epsilon'
+  BETA_START: 0.0001
+  BETA_END: 0.02
+  num_inference_steps: 20
+
+  lr_scheduler:
+    _target_: torch.optim.lr_scheduler.MultiStepLR
+    milestones: [1200, 1700]
+    gamma: 0.5

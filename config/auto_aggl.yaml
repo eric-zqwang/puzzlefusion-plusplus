@@ -1,0 +1,32 @@
+# Managed by Hydra
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+defaults:
+  - _self_
+  - denoiser/data
+  - denoiser/model
+  - denoiser/encoder
+  - verifier/model
+  - ae/model
+  - ae/vq_vae
+  - override hydra/hydra_logging: disabled
+  - override hydra/job_logging: disabled
+
+denoiser:
+  ckpt_path: null
+
+verifier:
+  ckpt_path: null
+
+experiment_name: null
+train_seed: 123
+test_seed: 123
+
+project_root_path: ${hydra:runtime.cwd}
+experiment_output_path: ${project_root_path}/output/denoiser/${experiment_name}
+
+inference_dir: null

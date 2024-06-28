@@ -1,0 +1,53 @@
+# Managed by Hydra
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+defaults:
+  - _self_
+  - vq_vae
+  - data
+  - model
+  - override hydra/hydra_logging: disabled
+  - override hydra/job_logging: disabled
+  
+project_root_path: ${hydra:runtime.cwd}
+experiment_output_path: ${project_root_path}/output/autoencoder/${experiment_name}
+
+ckpt_path: null
+experiment_name: null
+train_seed: 123
+test_seed: 123
+
+
+logger:
+  # https://pytorch-lightning.readthedocs.io/en/stable/extensions/generated/pytorch_lightning.loggers.WandbLogger.html
+  _target_: lightning.pytorch.loggers.WandbLogger
+  project: puzzlefusion_plusplus
+  name: ${experiment_name}
+  save_dir: ${experiment_output_path}/training
+
+# https://pytorch-lightning.readthedocs.io/en/stable/common/trainer.html
+trainer:
+  accelerator: gpu
+  max_epochs: 2000
+  num_sanity_val_steps: 1
+  check_val_every_n_epoch: 100
+  profiler: simple
+  precision: 32
+
+# https://pytorch-lightning.readthedocs.io/en/stable/api/pytorch_lightning.callbacks.ModelCheckpoint.html
+checkpoint_monitor:
+  _target_: lightning.pytorch.callbacks.ModelCheckpoint
+  monitor: val_loss/cd_loss
+  mode: min
+  save_last: True
+  save_top_k: 3
+  every_n_epochs: ${trainer.check_val_every_n_epoch}
+  filename: "{epoch}"
+  dirpath: ${experiment_output_path}/training
+
+
+

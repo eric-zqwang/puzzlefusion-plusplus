@@ -1,0 +1,16 @@
+data:
+  batch_size: 6
+  val_batch_size: 6
+  num_workers: 6
+  data_fn: "everyday.{}.txt"
+  data_dir: ./pc_data/everyday/train/
+  data_val_dir: ./pc_data/everyday/val/
+  mesh_data_dir: ../Breaking-Bad-Dataset.github.io/data/
+  rot_range: -1
+  overfit: -1
+  data_keys:
+    - 'part_ids'
+  num_pc_points: 1000 
+  min_num_part: 2
+  max_num_part: 20
+  shuffle_parts: False

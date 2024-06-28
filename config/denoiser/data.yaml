@@ -1,0 +1,12 @@
+data:
+  batch_size: 64
+  val_batch_size: 64
+  num_workers: 10
+  data_fn: "everyday.{}.txt"
+  data_dir: ./pc_data/everyday/train/
+  data_val_dir: ./pc_data/everyday/val/
+  rot_range: -1
+  overfit: -1
+  min_num_part: 2
+  max_num_part: 20
+
