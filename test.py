@@ -19,19 +19,26 @@ def main(cfg):
     test_loader = build_test_dataloader(cfg.denoiser)
 
     # load denoiser weights
-    model = AutoAgglomerative.load_from_checkpoint(cfg.denoiser.ckpt_path, cfg=cfg, strict=False)
+    model = AutoAgglomerative(cfg)
+
+    denoiser_weights = torch.load(cfg.denoiser.ckpt_path)['state_dict']
+
+    model.denoiser.load_state_dict(
+        {k.replace('denoiser.', ''): v for k, v in denoiser_weights.items() 
+         if k.startswith('denoiser.')}
+    )
+
+    model.encoder.load_state_dict(
+        {k.replace('encoder.', ''): v for k, v in denoiser_weights.items() 
+         if k.startswith('encoder.')}
+    )
 
     # load verifier weights    
     verifier_weights = torch.load(cfg.verifier.ckpt_path)['state_dict']
     model.verifier.load_state_dict({k.replace('verifier.', ''): v for k, v in verifier_weights.items()})
-
     # initialize trainer
-    trainer = pl.Trainer(accelerator=cfg.trainer.accelerator, max_epochs=1, logger=False)
+    trainer = pl.Trainer(accelerator=cfg.accelerator, max_epochs=1, logger=False)
     
-    # check the checkpoint
-    assert cfg.ckpt_path is not None, "Error: Checkpoint path is not provided."
-    assert os.path.exists(cfg.ckpt_path), f"Error: Checkpoint path {cfg.ckpt_path} does not exist."
-
     # start inference
     trainer.test(model=model, dataloaders=test_loader)
 

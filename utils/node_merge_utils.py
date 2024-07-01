@@ -40,6 +40,18 @@ def get_final_pose_pts_dynamic(pts, n_pcs, pred_trans, pred_rots, num_parts, nod
     
     return torch.cat(final_pts, dim=0)
 
+def get_final_pose_pts(pts, trans, rots):
+    """
+    pts: B, P, N, 3
+    rots: B, P, 4
+    trans: B, P, 3
+    """
+    rots = rots / rots.norm(dim=-1, keepdim=True)
+    pts = transforms.quaternion_apply(rots.unsqueeze(2), pts)
+    pts = pts + trans.unsqueeze(2)
+
+    return pts
+
 def get_pc_start_end(idx, n_pcs):
     n_pcs_cumsum = n_pcs.cumsum(dim=1)
     pc_st1 = 0 if idx == 0 else n_pcs_cumsum[0, idx - 1]

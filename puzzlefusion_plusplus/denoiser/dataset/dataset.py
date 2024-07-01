@@ -37,14 +37,11 @@ class GeometryLatentDataset(Dataset):
             part_valids = data_dict['part_valids']
             part_pcs_gt = data_dict['part_pcs_gt']
             mesh_file_path = data_dict['mesh_file_path'].item()
+            graph = data_dict['graph']
+            # import pdb
+            # pdb.set_trace()
+            ref_part = data_dict['ref_part']
 
-            graph = np.ones((self.max_num_part, self.max_num_part), dtype=bool)
-            scale = data_dict['scale']
-            ref_part = np.zeros_like(data_dict['part_valids'])
-            ref_part_idx = np.argmax(scale[:num_parts])
-            ref_part[ref_part_idx] = 1
-            ref_part = ref_part.astype(bool)
-            
             sample = {
                 'data_id': data_id,
                 'part_valids': part_valids,
@@ -54,17 +51,18 @@ class GeometryLatentDataset(Dataset):
                 'part_pcs_gt': part_pcs_gt,
                 'graph': graph,
             }
-            
+
             if self.mode == "test":
-                matching_data_path = os.path.join(self.matching_data_path, mesh_file_path.replace("/", "_")+".npz")
+                matching_data_path = os.path.join(self.matching_data_path, str(data_id) + '.npz')
                 if not os.path.exists(matching_data_path):
                     continue
                 matching_data = np.load(matching_data_path, allow_pickle=True)
                 edges = matching_data['edges']
-                correspondences = matching_data['correspondance']
-                gt_pc_by_area = matching_data['gt_pc']
-                critical_pcs = matching_data['critical_pcs']
-                sample['edges'] = edges
+                correspondences = matching_data['correspondence']
+                gt_pc_by_area = matching_data['gt_pcs']
+                critical_pcs_idx = matching_data['critical_pcs_idx']
+                n_pcs = matching_data['n_pcs']
+                n_critical_pcs = matching_data['n_critical_pcs']
                     
                 if correspondences.shape[0] != 1:
                     if correspondences.dtype == "O":
@@ -74,42 +72,39 @@ class GeometryLatentDataset(Dataset):
                 else:
                     sample['correspondences'] = [correspondences.squeeze()]
                     
-                sample['gt_pc_by_area'] = gt_pc_by_area.tolist()
-                sample['critical_pcs'] = critical_pcs
-
+                sample['gt_pc_by_area'] = gt_pc_by_area
+                sample['critical_pcs_idx'] = critical_pcs_idx
+                sample['edges'] = edges
+                sample['n_pcs'] = n_pcs
+                sample['n_critical_pcs'] = n_critical_pcs
 
             self.data_list.append(sample)
 
-
+    
     def _anchor_coords(self, pcs, global_t, global_r):
         global_r = R.from_quat(global_r[[1, 2, 3, 0]]).inv()
-        for i in range(pcs.shape[0]):
-            for j in range(pcs.shape[1]):
-                pcs[i][j] = global_r.apply(pcs[i][j])
-                pcs[i][j] = pcs[i][j] - global_t
+        
+        pcs = global_r.apply(pcs)
+        pcs = pcs - global_t
         return pcs
 
 
-    def _move_to_init_pose(self, pcs, edges, trans, rots):
-        final_pose_critical_pcs = []
-        for i in range(edges.shape[0]):
-            idx_1, idx_2 = edges[i]
-            trans_1 = trans[idx_1]
-            trans_2 = trans[idx_2]
-            rots_1 = rots[idx_1]
-            rots_2 = rots[idx_2]
-            pcs_1 = pcs[i][0]
-            pcs_2 = pcs[i][1]
-            # apply trans 
-            pcs_1 = pcs_1 - trans_1
-            pcs_2 = pcs_2 - trans_2
+    def _move_to_init_pose(self, pcs, n_pcs, num_parts, trans, rots):
+        final_pose_pts = []
+        
+        pcs_count = 0
+        for i in range(num_parts):
+            c_pcs = pcs[pcs_count:pcs_count+n_pcs[i]]
             
-            # apply rots
-            pcs_1 = R.from_quat(rots_1[[1, 2, 3, 0]]).inv().apply(pcs_1) # [w, x, y, z] -> [x, y, z, w]
-            pcs_2 = R.from_quat(rots_2[[1, 2, 3, 0]]).inv().apply(pcs_2)
-            final_pose_critical_pcs.append([pcs_1, pcs_2])
+            c_pcs = c_pcs - trans[i]
+            c_pcs = R.from_quat(rots[i][[1, 2, 3, 0]]).inv().apply(c_pcs) # [w, x, y, z] -> [x, y, z, w]
             
-        return final_pose_critical_pcs
+            final_pose_pts.append(c_pcs)
+            pcs_count += n_pcs[i]
+        
+        final_pose_pts = np.concatenate(final_pose_pts, axis=0)
+                
+        return final_pose_pts
     
     
     def __len__(self):
@@ -164,12 +159,15 @@ class GeometryLatentDataset(Dataset):
         pad_data[:data.shape[0]] = data
         return pad_data
     
+
     def __getitem__(self, idx):
+        
         data_dict = copy.deepcopy(self.data_list[idx])
         num_parts = data_dict['num_parts']
         part_pcs_gt = data_dict['part_pcs_gt']
+        
         ref_part = data_dict['ref_part']
-
+        
         part_pcs_final, pose_gt_r = self._rotate_whole_part(part_pcs_gt)
         part_pcs_final, pose_gt_t = self._recenter_ref(part_pcs_final, ref_part)
         
@@ -184,36 +182,44 @@ class GeometryLatentDataset(Dataset):
             cur_trans.append(gt_trans)
             cur_pts.append(pc)
                         
-        cur_pts = self._pad_data(np.stack(cur_pts, axis=0)).astype(np.float32) # [P, N, 3]
-        cur_quat = self._pad_data(np.stack(cur_quat, axis=0)).astype(np.float32) # [P, 4]
-        cur_trans = self._pad_data(np.stack(cur_trans, axis=0)).astype(np.float32) # [P, 3]
-        part_pcs_gt = self._pad_data(data_dict['part_pcs_gt']).astype(np.float32) # [P, N, 3]
+        cur_pts = self._pad_data(np.stack(cur_pts, axis=0)).astype(np.float32)  # [P, N, 3]
+        cur_quat = self._pad_data(np.stack(cur_quat, axis=0)).astype(np.float32)  # [P, 4]
+        cur_trans = self._pad_data(np.stack(cur_trans, axis=0)).astype(np.float32)  # [P, 3]
+        part_pcs_gt = self._pad_data(np.stack(part_pcs_gt, axis=0)).astype(np.float32) # [P, N, 3]
 
+        
+        if self.mode == 'test':        
+            gt_pc_by_area = self._anchor_coords(
+                data_dict['gt_pc_by_area'], 
+                pose_gt_t, 
+                pose_gt_r
+            )
+
+            part_pcs_by_area = self._move_to_init_pose(
+                gt_pc_by_area,
+                data_dict['n_pcs'],
+                num_parts,
+                cur_trans,
+                cur_quat
+            )
+            
+            data_dict['part_pcs_by_area'] = part_pcs_by_area.astype(np.float32)
+        
+        
         # Normalize the part pcs
         scale = np.max(np.abs(cur_pts), axis=(1,2), keepdims=True)
         scale[scale == 0] = 1
         cur_pts = cur_pts / scale
-
+        
         data_dict['part_pcs'] = cur_pts
         data_dict['part_pcs_gt'] = part_pcs_gt
         data_dict['part_rots'] = cur_quat
         data_dict['part_trans'] = cur_trans
         data_dict['part_scale'] = scale.squeeze(-1)
 
-                
-        if self.mode == 'test':       
-            critical_pcs = self._anchor_coords(data_dict['critical_pcs'], pose_gt_t, pose_gt_r)
+        data_dict['init_pose_r'] = pose_gt_r
+        data_dict['init_pose_t'] = pose_gt_t
 
-            critical_pcs = self._move_to_init_pose(
-                critical_pcs,
-                data_dict['edges'],
-                cur_trans,
-                cur_quat
-            )
-            data_dict['critical_pcs'] = critical_pcs
-            data_dict['init_pose_r'] = pose_gt_r
-            data_dict['init_pose_t'] = pose_gt_t
-        
         
         # Only one reference part
         if self.cfg.model.multiple_ref_parts is False:

@@ -197,11 +197,16 @@ class GeometryPartDataset(Dataset):
         pcs, graph = self._get_pcs(self.data_list[index])
         num_parts = pcs.shape[0]
         
-        scale = np.max(np.abs(pcs), axis=(1,2), keepdims=True)
-        scale[scale == 0] = 1
+        scale = np.max(pcs, axis=(1,2)) - np.min(pcs, axis=(1, 2))
+        
+        ref_part = np.zeros((self.max_num_part), dtype=np.float32)
+        ref_part_idx = np.argmax(scale[:num_parts])
+        ref_part[ref_part_idx] = 1
+        ref_part = ref_part.astype(bool)
+
         
         data_dict = {
-            'scale': scale.squeeze(2),
+            'ref_part': ref_part,
             'part_pcs_gt': pcs,
         }
         

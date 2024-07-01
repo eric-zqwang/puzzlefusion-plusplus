@@ -51,7 +51,7 @@ data:
   batch_size: 64
   val_batch_size: 64
   num_workers: 4
-  verifier_data_path: null
+  verifier_data_path: ./data/verifier_data/
   overfit: -1
 
 

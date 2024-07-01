@@ -25,6 +25,8 @@ class GeometryPartDataset(Dataset):
     ):
         self.cfg = cfg
         self.category = category if category.lower() != 'all' else ''
+        self.data_dir = data_dir
+        self.data_fn = data_fn
 
         self.data_files = sorted([f for f in os.listdir(self.data_dir) if f.endswith('.npz')])
 

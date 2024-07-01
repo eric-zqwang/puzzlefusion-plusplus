@@ -18,15 +18,85 @@ defaults:
 
 denoiser:
   ckpt_path: null
+  data:
+    val_batch_size: 1
+    matching_data_path: ./data/matching_data/
+
 
 verifier:
   ckpt_path: null
+  threshold: 0.9
+  max_iters: 6
 
 experiment_name: null
 train_seed: 123
 test_seed: 123
+accelerator: gpu
 
 project_root_path: ${hydra:runtime.cwd}
 experiment_output_path: ${project_root_path}/output/denoiser/${experiment_name}
 
 inference_dir: null
+
+
+renderer:
+  output_path: /results/
+  mesh_path: ../Breaking-Bad-Dataset.github.io/data/
+  num_samples: 300
+  duration: 6
+  extend_endframes: 20
+  min_parts: 2
+  max_parts: 20
+  category: all
+  material: plastic
+  save_gt: False
+  random_sample: True
+  
+  blender:
+    imgRes_x: 2048
+    imgRes_y: 2048
+    use_GPU: True
+    exposure: 1.5
+    numSamples: 200
+
+  camera_kwargs:
+    camera_type: orthographic
+    fit_camera: False
+    camPos: [3, 0, 2]
+    camLookat: [0, 0, 0.5]
+    camUp: [0, 1, 0]
+    camHeight: 2.2
+    resolution: [256, 256]
+    samples: 32
+    focalLength: 50
+
+  light:
+    lightAngle: [6, -30, -155] 
+    strength: 2
+    shadowSoftness: 0.3
+
+  render_kwargs:
+    preview: True
+    shadow_catcher: False
+
+  colors:
+    - [84, 107, 45]   
+    - [178, 0, 0]      
+    - [135, 206, 234]  
+    - [239, 196, 15]   
+    - [216, 112, 214]  
+    - [255, 127, 79]   
+    - [0, 127, 127]    
+    - [237, 58, 130]   
+    - [196, 237, 0]    
+    - [0, 0, 127]      
+    - [137, 53, 15]    
+    - [112, 127, 142]  
+    - [178, 127, 209]  
+    - [255, 216, 178]  
+    - [127, 127, 0]    
+    - [53, 68, 79]     
+    - [183, 75, 107]
+    - [70, 72, 107]
+    - [180, 123, 95]
+    - [137, 66, 70]

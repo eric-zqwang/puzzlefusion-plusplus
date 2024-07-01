@@ -6,7 +6,7 @@ tools/
 scripts/
 data/
 .vscode/
-puzzlefusion_plusplus/auto_aggl.py
+
 
 __pycache__
 *.ipynb
