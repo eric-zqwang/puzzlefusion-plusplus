@@ -3,7 +3,6 @@ render_results/
 wandb/
 BlenderToolBox_render/
 tools/
-scripts/
 data/
 .vscode/
 
