@@ -24,12 +24,13 @@ In the orginal benchmark code of Breaking Bad dataset, it needs sample point clo
 cd puzzlefusion-plusplus/
 python generate_pc_data +data save_pc_data_path=data/pc_data/everyday/
 ```
+We also provide the pre-processed data in [here](https://drive.google.com/file/d/1nCG18WEDuy2LoYt2pyt6UUgAZrsp4xWf/view?usp=drive_link).
 
 ### Verifier training data
-You can download the verifier data from [here](https://1sfu-my.sharepoint.com/:f:/g/personal/zwa170_sfu_ca/EtSHHinoDndPs8kJfRn_n0QBue1ypoXGkNEOio9pU6bFcQ?e=pkcuox).
+You can download the verifier data from [here](https://drive.google.com/file/d/19qjY8pbftUK70tJWqd3xfBNrzMUygq4G/view?usp=drive_link).
 
 ### Matching data
-You can download the matching data from [here](https://1sfu-my.sharepoint.com/:f:/g/personal/zwa170_sfu_ca/EtSHHinoDndPs8kJfRn_n0QBue1ypoXGkNEOio9pU6bFcQ?e=pkcuox).
+You can download the matching data from [here](https://drive.google.com/file/d/1wC9BU_Z2PD8G7UkPczZDFuDZhQnuKKvp/view?usp=drive_link).
 
 The verifier data and matching data need to generate the data from [Jigsaw](https://github.com/Jiaxin-Lu/Jigsaw). Since this process is quite complex, we will upload the processed data for now. More details on how to obtain this processed data will be provided later.
 
