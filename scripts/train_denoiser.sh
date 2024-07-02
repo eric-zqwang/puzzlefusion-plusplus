@@ -3,6 +3,5 @@ python train_denoiser.py \
     data.batch_size=64 \
     data.val_batch_size=64 \
     model.encoder_weights_path=output/autoencoder/everyday_2000epoch/training/last.ckpt \
-    data.overfit=400 \
     +trainer.devices=4 \
     +trainer.strategy=ddp

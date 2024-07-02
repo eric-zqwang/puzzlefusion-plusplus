@@ -35,7 +35,7 @@ You can download the matching data from [here](https://drive.google.com/file/d/1
 The verifier data and matching data need to generate the data from [Jigsaw](https://github.com/Jiaxin-Lu/Jigsaw). Since this process is quite complex, we will upload the processed data for now. More details on how to obtain this processed data will be provided later.
 
 ## Checkpoints
-We provide the checkpoints at this [link](https://1sfu-my.sharepoint.com/:f:/g/personal/zwa170_sfu_ca/EoYp5Z5WiqtNuq_GOb5Yj1ABSI5lQSXG64StzXb6eTbXNg?e=N3uJ7L). Please download and place them as ./work_dirs/ then unzip.
+We provide the checkpoints at this [link](https://drive.google.com/file/d/1oj2t7nwRJMizGveBANR21ssF4o3TNJ8Q/view?usp=sharing). Please download and place them as ./work_dirs/ then unzip.
 
 ## Structure
 Finally, the overall data structure should looks like:

@@ -4,6 +4,7 @@ wandb/
 BlenderToolBox_render/
 tools/
 data/
+!/puzzlefusion_plusplus/vqvae/data
 .vscode/
 
 

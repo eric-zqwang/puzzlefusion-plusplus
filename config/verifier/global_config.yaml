@@ -7,6 +7,7 @@ hydra:
 
 defaults:
   - _self_
+  - model
   - override hydra/hydra_logging: disabled
   - override hydra/job_logging: disabled
 
