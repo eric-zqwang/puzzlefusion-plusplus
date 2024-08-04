@@ -1,0 +1,5 @@
+blendertoolbox
+bpy
+hydra-core
+scipy
+mathutils
