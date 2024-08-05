@@ -6,7 +6,7 @@ import bpy
 
 
 def render_results(cfg, renderer: MyRenderer):
-    save_dir = "render_results/"
+    save_dir = cfg.renderer.output_path
     
     sampled_files = renderer.sample_data_files()
 
