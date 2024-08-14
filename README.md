@@ -10,7 +10,10 @@
 </div>
 
 
-https://github.com/user-attachments/assets/37ec2a37-b88e-4de4-92af-e8a41756d7ff
+
+
+https://github.com/user-attachments/assets/24de5bc5-0a58-4010-bdb8-43173f5181f5
+
 
 
 This repository provides the official implementation of the paper [PuzzleFusion++: Auto-agglomerative 3D Fracture Assembly by Denoise and Verify](https://arxiv.org/abs/2406.00259).
