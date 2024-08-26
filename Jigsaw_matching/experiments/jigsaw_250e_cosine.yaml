@@ -1,0 +1,40 @@
+MODEL_NAME: jigsaw_4x4_128_512_250e_cosine_everyday
+MODULE: jigsaw
+
+PROJECT: jigsaw
+
+DATASET: breaking_bad.all_piece_matching
+
+GPUS: [0, 1, 2, 3]
+BATCH_SIZE: 2
+NUM_WORKERS: 4
+
+TRAIN:
+  NUM_EPOCHS: 250
+  LR: 0.001
+  WEIGHT_DECAY: 0.
+  WARMUP_RATIO: 0.
+  LR_SCHEDULER: 'cosine'
+  LR_DECAY: 100.
+  VAL_EVERY: 5
+
+CALLBACK:
+  CHECKPOINT_MONITOR: val/mat_f1
+  CHECKPOINT_MODE: max
+
+DATA:  # you shall use DATA instead of upper_case_dataset_name
+  SUBSET: everyday
+  DATA_FN: 'everyday.{}.txt'
+  MAX_NUM_PART: 20
+  NUM_PC_POINTS: 5000
+  SAMPLE_BY: area
+  MIN_PART_POINT: 30
+  FRACTURE_LABEL_THRESHOLD: 0.025
+  CATEGORY: Bottle
+
+MODEL:  # you shall use MODEL instead of upper_case_module_name
+  ENCODER: pointnet2_pt.msg.dynamic
+
+# STATS is for eval
+#STATS: "./results/jigsaw_4x4_128_512_250e_cosine_everyday/stats/eval"
+

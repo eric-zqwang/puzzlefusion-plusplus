@@ -1,0 +1,40 @@
+name: jigsaw_ut
+channels:
+  - pytorch3d
+  - pyg
+  - open3d-admin
+  - iopath
+  - fvcore
+  - anaconda
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - cudatoolkit=11.3
+  - pytorch=1.10
+  - torchaudio
+  - torchvision
+  - pytorch-lightning
+  - fvcore
+  - iopath
+  - pytorch3d
+  - wandb
+  - easydict
+  - scipy
+  - trimesh
+  - open3d
+  - einops
+  - scikit-learn
+  - pyg
+  - torchmetrics
+  - timm
+  - ipdb
+  - pip:
+    - addict==2.4.0
+    - gtsam==4.1.1
+    - matplotlib==3.7.0
+    - pandas==1.5.3
+    - plyfile==0.7.4
+    - pymeshlab==2022.2.post2
+    - sklearn==0.0.post1
