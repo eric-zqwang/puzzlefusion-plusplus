@@ -22,15 +22,15 @@ By running with the checkpoints we provided in the [data preparation](../docs/da
 ```
 
 ## Visualization
-We will upload visualization code as soon as possible. We use the [BlenderToolbox](https://github.com/Jiaxin-Lu/Jigsaw) to render our results. You need make sure you download the Breaking-Bad dataset everyday subset since we use mesh to visualize. 
-### Installation
+We use the [BlenderToolbox](https://github.com/HTDerekLiu/BlenderToolbox) to render our results. In addition, you need make sure you download the Breaking-Bad dataset everyday subset since we use mesh to visualize. 
+
+#### Installation
 ```
 conda create -n blender python=3.10
 source activate blender
 pip install -r renderer/requirements.txt
 ```
-
-### Render
+#### Render
 ```
 export PYTHONPATH=$(pwd)
 python renderer/render_results experiment_name=everyday_epoch2000_bs64 inference_dir=results  renderer.output_path=results mesh_path=../Breaking-Bad-Dataset.github.io/data/
